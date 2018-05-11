@@ -1,0 +1,19 @@
+## Interface: 11200
+## Title: |cfffbb034 Xckbucl|cffffffffXtraUnitFrame v4.0
+## Author: Xckbucl, 2017
+## Version: 4.0
+## Notes: XtraUnitFrame, Helping Healers on Assit MT! Made by Xckbucl from Elysium PvP & Kronos II
+## SavedVariables: XtraUnitFrameSettings,XtraUnitFrameExtraSettings, XtraUnitFrameProfil, MMPButtonSettings
+
+#Addon Core
+XtraUnitFrame.lua
+XtraUnitFrameConf.lua
+
+#Modules
+modules\XtraUnitFrameProfil.lua
+modules\XtraUnitFrameProfileSync.lua
+modules\XtraUnitFrameFunc.lua
+modules\LoadSyncFromLauncher.lua
+
+#Addon Interface UI
+XtraUnitFrameUI.xml

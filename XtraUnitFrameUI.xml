@@ -1,0 +1,2165 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!--- UI FRAME MINIMAP BUTTON  -->
+	<Button name="XUF_MinimapButtonFrame" toplevel="true" frameStrata="LOW" parent="Minimap" enableMouse="true" movable="true" hidden="false">
+		<Size>
+			<AbsDimension x="33" y="33"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="" y=""/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parent_Texture" file="Interface\ICONS\INV_Misc_Pipe_01">
+					<Size>
+						<AbsDimension x="17" y="17"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="8" y="-8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.075" right="0.925" top="0.075" bottom="0.925"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+					<Size>
+						<AbsDimension x="56" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp","RightButtonUp")
+				this:RegisterForDrag("LeftButton")
+				<!--Xuf:XUF_LoadButtonPosition()-->
+			</OnLoad>
+			<OnMouseDown>
+			</OnMouseDown>
+			<OnMouseUp>
+			</OnMouseUp>
+			<OnClick>
+				Xuf:XUF_OnClickButton(arg1)
+			</OnClick>
+			<OnEnter>
+				XUF_DisplayTimeout = -1
+				GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+				GameTooltip:AddLine("XtraUnitFrame v" .. GetAddOnMetadata("XtraUnitFrame", "Version"));
+				GameTooltip:AddLine("Right Click to Show Options", 0, 1, 0);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				XUF_DisplayTimeout = 0;
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnDragStart>
+				Xuf.XUF_MiniMapDrag = 1
+				Xuf:XUF_DragMMBOnUpdate(arg1)
+			</OnDragStart>
+			<OnDragStop>
+				Xuf:XUF_DragMMBOnUpdate(arg1)
+				Xuf.XUF_MiniMapDrag = 0
+				local _,_,_,xpos,ypos = this:GetPoint()
+				MMPButtonSettings["ButtonPos"] = {xpos,ypos}
+			</OnDragStop>
+		</Scripts>
+	</Button>
+	<Frame name="XUFMBBFrame" toplevel="true" parent="UIParent" frameStrata="DIALOG" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnLoad>
+				Xuf:XUFMBBFrame_OnLoad()
+			</OnLoad>
+			<OnEvent>
+				Xuf:XUF_LoadButtonPosition()
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	<!--- UI FRAME CONTEXT MENU MINIMAP BUTTON  -->
+	
+	<Frame name="XUFMiniMapBtnContextMenu" inherits="UIDropDownMenuTemplate" id="1">
+		<Scripts>
+			<OnLoad>
+				UIDropDownMenu_Initialize(self, XUFMiniMapButtonMenu_OnLoad, "MENU");
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<!--- UI FRAME INTERFACE SETTINGS  -->
+	<Frame
+	name="XtraUnitFrameUI"
+	frameStrata="DIALOG"
+	enableMouse="true"
+	hidden="true"
+	parent="UIParent">
+		<Size>
+			<AbsDimension x="391" y="320" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent">
+				<Offset>
+					<AbsDimension x="0" y="0" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop
+		bgFile="Interface\DialogFrame\UI-DialogBox-Background"
+		edgeFile="Interface\DialogFrame\UI-DialogBox-Gold-Border"
+		tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer>
+				<Texture name="$parentTitleBorder" file="Interface\DialogFrame\UI-DialogBox-Gold-Header">
+					<Size>
+						<AbsDimension x="210" y="32" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="5" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.2" right="0.8" top="0" bottom="0.6" />
+				</Texture>
+				<FontString name="$parentTitleString" font="Fonts\FRIZQT__.TTF" text="">
+					<Size>
+						<AbsDimension x="210" y="0" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-5" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="12" />
+					</FontHeight>
+					<Color r="1" g="0.8196079" b="0" />
+					<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+							<AbsDimension x="1" y="-1" />
+						</Offset>
+					</Shadow>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="XUFMainSettings" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+				</Layers>
+				<Frames>
+					<!--START TAB1-->
+					<Slider name="$parentSliderGrpVisible" inherits="OptionsSliderTemplate">
+						<Size>
+							<AbsDimension x="150" y="15" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="">
+								<Offset>
+									<AbsDimension x="40" y="-50" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentLabel" inherits="GameFontHighlight" justifyH="TOP" text="">
+									<Size>
+										<AbsDimension x="130" y="15" />
+									</Size>
+									<Anchors>
+										<Anchor point="TOP" relativePoint="TOP">
+											<Offset>
+												<AbsDimension x="0" y="15" />
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								this:SetMinMaxValues(1,10);
+								this:SetValueStep(1);
+								getglobal(this:GetName().."Low"):SetText("1");
+								getglobal(this:GetName().."High"):SetText("10");
+							</OnLoad>
+							<OnValueChanged>
+								XUFMainSettingsSliderGrpVisibleLabel:SetText("MT Displayed : "..this:GetValue())
+								Xuf:SelectGroupToShow(this:GetValue())
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+					<Slider name="$parentSliderGrpSettings" inherits="OptionsSliderTemplate">
+						<Size>
+							<AbsDimension x="150" y="15" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="">
+								<Offset>
+									<AbsDimension x="200" y="-50" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentLabel" inherits="GameFontHighlight" justifyH="TOP" text="">
+									<Size>
+										<AbsDimension x="130" y="15" />
+									</Size>
+									<Anchors>
+										<Anchor point="TOP" relativePoint="TOP">
+											<Offset>
+												<AbsDimension x="0" y="15" />
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								this:SetMinMaxValues(1,10);
+								this:SetValueStep(1);
+								getglobal(this:GetName().."Low"):SetText("1");
+								getglobal(this:GetName().."High"):SetText("10");
+							</OnLoad>
+							<OnValueChanged>
+								XUFMainSettingsSliderGrpSettingsLabel:SetText("Setting MT Grp N°"..this:GetValue())
+								XUFMainSettingsLabelPlayer1Label:SetText("MT "..this:GetValue())
+								Xuf:LoadPlayerNameSaved(this:GetValue())
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+					<CheckButton name="$parentCheckEnableXtra1" checked="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508886-59c2-4f83-ae10-27aaad48391b"><Property name="Size">&lt;?xml version="1.0"?&gt;
+							&lt;Size xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+							&lt;Width&gt;100&lt;/Width&gt;
+							&lt;Height&gt;32&lt;/Height&gt;
+						&lt;/Size&gt;</Property></FrameSkin>-->
+						<Size>
+							<AbsDimension x="32" y="32" />
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="15" y="10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer>
+								<FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Auto Reload">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT">
+											<Offset>
+												<AbsDimension x="-2" y="0" />
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<FontHeight>
+										<AbsValue val="10" />
+									</FontHeight>
+									<Color r="1" g="0.8196079" b="0" />
+									<Shadow>
+										<Color r="0" g="0" b="0" />
+										<Offset>
+											<AbsDimension x="1" y="-1" />
+										</Offset>
+									</Shadow>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD" />
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+					</CheckButton>
+					<CheckButton name="$parentCheckMoveFrame" checked="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508886-59c2-4f83-ae10-27aaad48391b"><Property name="Size">&lt;?xml version="1.0"?&gt;
+							&lt;Size xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+							&lt;Width&gt;100&lt;/Width&gt;
+							&lt;Height&gt;32&lt;/Height&gt;
+						&lt;/Size&gt;</Property></FrameSkin>-->
+						<Size>
+							<AbsDimension x="0" y="0" />
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parentCheckEnableXtra1">
+								<Offset>
+									<AbsDimension x="0" y="25" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer>
+								<FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Lock">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT">
+											<Offset>
+												<AbsDimension x="-2" y="0" />
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<FontHeight>
+										<AbsValue val="10" />
+									</FontHeight>
+									<Color r="1" g="0.8196079" b="0" />
+									<Shadow>
+										<Color r="0" g="0" b="0" />
+										<Offset>
+											<AbsDimension x="1" y="-1" />
+										</Offset>
+									</Shadow>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+							</OnClick>							
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD" />
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+					</CheckButton>
+					<CheckButton name="$parentCheckEnabled" checked="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508886-59c2-4f83-ae10-27aaad48391b"><Property name="Size">&lt;?xml version="1.0"?&gt;
+							&lt;Size xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+							&lt;Width&gt;100&lt;/Width&gt;
+							&lt;Height&gt;32&lt;/Height&gt;
+						&lt;/Size&gt;</Property></FrameSkin>-->
+						<Size>
+							<AbsDimension x="32" y="32" />
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parentCheckEnableXtra1">
+								<Offset>
+									<AbsDimension x="0" y="25" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer>
+								<FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Enable">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT">
+											<Offset>
+												<AbsDimension x="-2" y="0" />
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<FontHeight>
+										<AbsValue val="10" />
+									</FontHeight>
+									<Color r="1" g="0.8196079" b="0" />
+									<Shadow>
+										<Color r="0" g="0" b="0" />
+										<Offset>
+											<AbsDimension x="1" y="-1" />
+										</Offset>
+									</Shadow>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								if (this:GetChecked()) then
+								XtraUnitFrameExtraSettings["XufEnabled"] = "enabled"
+								else
+								XtraUnitFrameExtraSettings["XufEnabled"] = "disabled"
+								end
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD" />
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+					</CheckButton>
+					<Button name="$parentButton1" inherits="OptionsButtonTemplate" text="">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508884-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+							<AbsDimension x="25" y="25" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset x="-12" y="-12"/>
+							</Anchor> 
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if (XtraUnitFrameExtraSettings["AutoReload"] == "enabled" and Xuf.ProfilIsSaved == "true") then
+								ReloadUI()
+								else
+								XtraUnitFrameUI:Hide()
+								end
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-down"/>
+						<HighlightTexture file="" alphaMode="ADD"/>
+						<ButtonText name="$parentText">
+							<FontHeight>
+								<AbsValue val="10" />
+							</FontHeight>
+						</ButtonText>
+					</Button>
+					<Button name="$parentInfoProfil" inherits="OptionsButtonTemplate" text="">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508884-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+							<AbsDimension x="30" y="30" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="12" y="-12"/>
+							</Anchor> 
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if UnitIsPartyLeader("player") or IsRaidOfficer() then
+								Xuf:SendSyncToRaid()
+								DEFAULT_CHAT_FRAME:AddMessage("|cffead454Xckbucl |rXtraUnitFrame |cfffbb034|||r Profil [|cfffbb034"..XtraUnitFrameProfil.."|r] Sync to Raid Done.")
+								else
+								DEFAULT_CHAT_FRAME:AddMessage("|cFFFF8000You need to be Raid Promoted, Raid Leader or In Raid.")
+								end
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
+						<HighlightTexture file=""/>
+						<ButtonText name="$parentText">
+							<FontHeight>
+								<AbsValue val="10" />
+							</FontHeight>
+						</ButtonText>
+					</Button>
+					<Button name="$parentDropDownProfils" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="BottomRight">
+								<Offset x="-125" y="10"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								local cb_init_fn = function()
+								local info
+								for k,v in pairs(Xuf.ProfilNameSaved) do
+								info = {}
+								info.text = v
+								info.value = v
+								info.func = function() UIDropDownMenu_SetSelectedID(XUFMainSettingsDropDownProfils, this:GetID(), 0);  end
+								UIDropDownMenu_AddButton(info)
+								end
+								end
+								UIDropDownMenu_Initialize(this, cb_init_fn)
+							</OnLoad>
+							<OnShow>
+							</OnShow>
+						</Scripts>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentLoadProfil" inherits="OptionsButtonTemplate" text="Load">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508884-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+							<AbsDimension x="75" y="22" />
+						</Size>
+						<Anchors>
+							<Anchor point="Top" relativeTo="$parentDropDownProfils">
+								<Offset x="35" y="23"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								XtraUnitFrameProfil = Xuf.ProfilNameSaved[UIDropDownMenu_GetSelectedID(XUFMainSettingsDropDownProfils)]
+								if(UIDropDownMenu_GetSelectedID(XUFMainSettingsDropDownProfils) ~= nil) then
+								Xuf:LoadSettingsInUI()
+								DEFAULT_CHAT_FRAME:AddMessage("|cffead454Xckbucl |rXtraUnitFrame |cfffbb034|||r XtraUnitFrame Profil [|cfffbb034"..Xuf.ProfilNameSaved[UIDropDownMenu_GetSelectedID(XUFMainSettingsDropDownProfils)].."|r] Loaded.")
+								else
+								DEFAULT_CHAT_FRAME:AddMessage("|cFFFF7F00No Profil Selected.")
+								end
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+							<TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+						</NormalTexture>						<PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+							<TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+						</PushedTexture>
+						<DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+							<TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+						</DisabledTexture>
+						<HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+							<TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+						</HighlightTexture>
+						<ButtonText name="$parentText">
+							<FontHeight>
+								<AbsValue val="10" />
+							</FontHeight>
+						</ButtonText>
+					</Button>
+					<Button name="$parentDeleteProfil" inherits="OptionsButtonTemplate" text="Delete">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508884-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+							<AbsDimension x="50" y="22" />
+						</Size>
+						<Anchors>
+							<Anchor point="Top" relativeTo="$parentLoadProfil">
+								<Offset x="65" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								Xuf:DeleteProfil(Xuf.ProfilNameSaved[UIDropDownMenu_GetSelectedID(XUFMainSettingsDropDownProfils)])
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+							<TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+						</NormalTexture>
+						<PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+							<TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+						</PushedTexture>
+						<DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+							<TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+						</DisabledTexture>
+						<HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+							<TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+						</HighlightTexture>
+						<ButtonText name="$parentText">
+							<FontHeight>
+								<AbsValue val="10" />
+							</FontHeight>
+						</ButtonText>
+					</Button>
+					<Button name="$parentSaveProfil" inherits="OptionsButtonTemplate" text="Save|Update">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508884-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+							<AbsDimension x="120" y="22" />
+						</Size>
+						<Anchors>
+							<Anchor point="BottomRight" relativeTo="$parentLoadProfil">
+								<Offset x="-75" y=""/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								Xuf:SaveSettingsProfil(XUFMainSettingsEditBoxSaveProfil:GetText())
+								Xuf.ProfilIsSaved = "true"
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+							<TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+						</NormalTexture>
+						<PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+							<TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+						</PushedTexture>
+						<DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+							<TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+						</DisabledTexture>
+						<HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+							<TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+						</HighlightTexture>
+						<ButtonText name="$parentText">
+							<FontHeight>
+								<AbsValue val="10" />
+							</FontHeight>
+						</ButtonText>
+					</Button>
+					<EditBox name="$parentEditBoxSaveProfil" enableMouse="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="115" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="BottomRight" relativeTo="$parentSaveProfil">
+						<Offset>
+						<AbsDimension x="-3" y="-25" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="RIGHT" />
+						</Anchors>
+						<TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="10" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+						</Anchors>
+						<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+						</Texture>
+						</Layer>
+						</Layers>
+						<FontString font="Fonts\ARIALN.TTF">
+						<FontHeight>
+						<AbsValue val="14" />
+						</FontHeight>
+						<Color r="1" g="1" b="1" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						<TextInsets>
+						<AbsInset left="5"/>
+						</TextInsets>
+						</EditBox>
+						<EditBox name="$parentEditBoxPlayer1" enableMouse="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="65" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="">
+						<Offset>
+						<AbsDimension x="22" y="40" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="RIGHT" />
+						</Anchors>
+						<TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="10" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+						</Anchors>
+						<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+						</Texture>
+						</Layer>
+						</Layers>
+						<FontString font="Fonts\ARIALN.TTF">
+						<FontHeight>
+						<AbsValue val="14" />
+						</FontHeight>
+						<Color r="1" g="1" b="1" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						<TextInsets>
+						<AbsInset left="3"/>
+						</TextInsets>
+						</EditBox>
+						<EditBox name="$parentEditBoxPlayer2" enableMouse="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="65" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer1">
+						<Offset>
+						<AbsDimension x="70" y="" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="RIGHT" />
+						</Anchors>
+						<TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="10" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+						</Anchors>
+						<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+						</Texture>
+						</Layer>
+						</Layers>
+						<FontString font="Fonts\ARIALN.TTF">
+						<FontHeight>
+						<AbsValue val="14" />
+						</FontHeight>
+						<Color r="1" g="1" b="1" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						<TextInsets>
+						<AbsInset left="3"/>
+						</TextInsets>
+						</EditBox>
+						<EditBox name="$parentEditBoxPlayer3" enableMouse="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="65" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer2">
+						<Offset>
+						<AbsDimension x="70" y="" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="RIGHT" />
+						</Anchors>
+						<TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="10" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+						</Anchors>
+						<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+						</Texture>
+						</Layer>
+						</Layers>
+						<FontString font="Fonts\ARIALN.TTF">
+						<FontHeight>
+						<AbsValue val="14" />
+						</FontHeight>
+						<Color r="1" g="1" b="1" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						<TextInsets>
+						<AbsInset left="3"/>
+						</TextInsets>
+						</EditBox>
+						<EditBox name="$parentEditBoxPlayer4" enableMouse="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="65" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer3">
+						<Offset>
+						<AbsDimension x="70" y="" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="RIGHT" />
+						</Anchors>
+						<TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="10" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+						</Anchors>
+						<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+						</Texture>
+						</Layer>
+						</Layers>
+						<FontString font="Fonts\ARIALN.TTF">
+						<FontHeight>
+						<AbsValue val="14" />
+						</FontHeight>
+						<Color r="1" g="1" b="1" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						<TextInsets>
+						<AbsInset left="3"/>
+						</TextInsets>
+						</EditBox>
+						<EditBox name="$parentEditBoxPlayer5" enableMouse="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="65" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer4">
+						<Offset>
+						<AbsDimension x="70" y="" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="RIGHT" />
+						</Anchors>
+						<TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="10" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+						</Anchors>
+						<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+						</Texture>
+						</Layer>
+						</Layers>
+						<FontString font="Fonts\ARIALN.TTF">
+						<FontHeight>
+						<AbsValue val="14" />
+						</FontHeight>
+						<Color r="1" g="1" b="1" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						<TextInsets>
+						<AbsInset left="3"/>
+						</TextInsets>
+						</EditBox>
+						<EditBox name="$parentEditBoxPlayer6" enableMouse="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="65" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentEditBoxPlayer1">
+						<Offset>
+						<AbsDimension x="0" y="-50" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="RIGHT" />
+						</Anchors>
+						<TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="10" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+						</Anchors>
+						<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+						</Texture>
+						</Layer>
+						</Layers>
+						<FontString font="Fonts\ARIALN.TTF">
+						<FontHeight>
+						<AbsValue val="14" />
+						</FontHeight>
+						<Color r="1" g="1" b="1" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						<TextInsets>
+						<AbsInset left="3"/>
+						</TextInsets>
+						</EditBox>
+						<EditBox name="$parentEditBoxPlayer7" enableMouse="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="65" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer6">
+						<Offset>
+						<AbsDimension x="70" y="" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="RIGHT" />
+						</Anchors>
+						<TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="10" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+						</Anchors>
+						<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+						</Texture>
+						</Layer>
+						</Layers>
+						<FontString font="Fonts\ARIALN.TTF">
+						<FontHeight>
+						<AbsValue val="14" />
+						</FontHeight>
+						<Color r="1" g="1" b="1" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						<TextInsets>
+						<AbsInset left="3"/>
+						</TextInsets>
+						</EditBox>
+						<EditBox name="$parentEditBoxPlayer8" enableMouse="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="65" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer7">
+						<Offset>
+						<AbsDimension x="70" y="" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="RIGHT" />
+						</Anchors>
+						<TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="10" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+						</Anchors>
+						<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+						</Texture>
+						</Layer>
+						</Layers>
+						<FontString font="Fonts\ARIALN.TTF">
+						<FontHeight>
+						<AbsValue val="14" />
+						</FontHeight>
+						<Color r="1" g="1" b="1" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						<TextInsets>
+						<AbsInset left="3"/>
+						</TextInsets>
+						</EditBox>
+						<EditBox name="$parentEditBoxPlayer9" enableMouse="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="65" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer8">
+						<Offset>
+						<AbsDimension x="70" y="" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="RIGHT" />
+						</Anchors>
+						<TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="10" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+						</Anchors>
+						<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+						</Texture>
+						</Layer>
+						</Layers>
+						<FontString font="Fonts\ARIALN.TTF">
+						<FontHeight>
+						<AbsValue val="14" />
+						</FontHeight>
+						<Color r="1" g="1" b="1" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						<TextInsets>
+						<AbsInset left="3"/>
+						</TextInsets>
+						</EditBox>
+						<EditBox name="$parentEditBoxPlayer10" enableMouse="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="65" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer9">
+						<Offset>
+						<AbsDimension x="70" y="" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="RIGHT" />
+						</Anchors>
+						<TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="10" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+						</Anchors>
+						<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+						</Texture>
+						</Layer>
+						</Layers>
+						<FontString font="Fonts\ARIALN.TTF">
+						<FontHeight>
+						<AbsValue val="14" />
+						</FontHeight>
+						<Color r="1" g="1" b="1" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						<TextInsets>
+						<AbsInset left="3"/>
+						</TextInsets>
+						</EditBox>
+						<EditBox name="$parentEditBoxPlayer11" enableMouse="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="65" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentEditBoxPlayer6">
+						<Offset>
+						<AbsDimension x="0" y="-50" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="RIGHT" />
+						</Anchors>
+						<TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="10" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+						</Anchors>
+						<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+						</Texture>
+						</Layer>
+						</Layers>
+						<FontString font="Fonts\ARIALN.TTF">
+						<FontHeight>
+						<AbsValue val="14" />
+						</FontHeight>
+						<Color r="1" g="1" b="1" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						<TextInsets>
+						<AbsInset left="3"/>
+						</TextInsets>
+						</EditBox>
+						<EditBox name="$parentEditBoxPlayer12" enableMouse="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="65" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer11">
+						<Offset>
+						<AbsDimension x="70" y="" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="RIGHT" />
+						</Anchors>
+						<TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="10" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+						</Anchors>
+						<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+						</Texture>
+						</Layer>
+						</Layers>
+						<FontString font="Fonts\ARIALN.TTF">
+						<FontHeight>
+						<AbsValue val="14" />
+						</FontHeight>
+						<Color r="1" g="1" b="1" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						<TextInsets>
+						<AbsInset left="3"/>
+						</TextInsets>
+						</EditBox>
+						<EditBox name="$parentEditBoxPlayer13" enableMouse="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="65" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer12">
+						<Offset>
+						<AbsDimension x="70" y="" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="RIGHT" />
+						</Anchors>
+						<TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="10" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+						</Anchors>
+						<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+						</Texture>
+						</Layer>
+						</Layers>
+						<FontString font="Fonts\ARIALN.TTF">
+						<FontHeight>
+						<AbsValue val="14" />
+						</FontHeight>
+						<Color r="1" g="1" b="1" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						<TextInsets>
+						<AbsInset left="3"/>
+						</TextInsets>
+						</EditBox>
+						<EditBox name="$parentEditBoxPlayer14" enableMouse="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="65" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer13">
+						<Offset>
+						<AbsDimension x="70" y="" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="RIGHT" />
+						</Anchors>
+						<TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="10" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+						</Anchors>
+						<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+						</Texture>
+						</Layer>
+						</Layers>
+						<FontString font="Fonts\ARIALN.TTF">
+						<FontHeight>
+						<AbsValue val="14" />
+						</FontHeight>
+						<Color r="1" g="1" b="1" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						<TextInsets>
+						<AbsInset left="3"/>
+						</TextInsets>
+						</EditBox>
+						<EditBox name="$parentEditBoxPlayer15" enableMouse="true">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="65" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer14">
+						<Offset>
+						<AbsDimension x="70" y="" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" />
+						</Anchors>
+						<TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="8" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="RIGHT" />
+						</Anchors>
+						<TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+						<Size>
+						<AbsDimension x="10" y="20" />
+						</Size>
+						<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+						</Anchors>
+						<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+						</Texture>
+						</Layer>
+						</Layers>
+						<FontString font="Fonts\ARIALN.TTF">
+						<FontHeight>
+						<AbsValue val="14" />
+						</FontHeight>
+						<Color r="1" g="1" b="1" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						<TextInsets>
+						<AbsInset left="3"/>
+						</TextInsets>
+						</EditBox>
+						<Frame name="$parentLabelPlayer1">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="179" y="28" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer1">
+						<Offset>
+						<AbsDimension x="0" y="20" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer>
+						<FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="MT">
+						<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<FontHeight>
+						<AbsValue val="12" />
+						</FontHeight>
+						<Color r="1" g="0.8196079" b="0" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						</Layer>
+						</Layers>
+						</Frame>
+						<Frame name="$parentLabelPlayer2">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="179" y="28" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer2">
+						<Offset>
+						<AbsDimension x="0" y="20" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer>
+						<FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Player 1">
+						<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<FontHeight>
+						<AbsValue val="12" />
+						</FontHeight>
+						<Color r="1" g="0.8196079" b="0" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						</Layer>
+						</Layers>
+						</Frame>
+						<Frame name="$parentLabelPlayer3">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="179" y="28" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer3">
+						<Offset>
+						<AbsDimension x="0" y="20" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer>
+						<FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Player 2">
+						<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<FontHeight>
+						<AbsValue val="12" />
+						</FontHeight>
+						<Color r="1" g="0.8196079" b="0" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						</Layer>
+						</Layers>
+						</Frame>
+						<Frame name="$parentLabelPlayer4">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="179" y="28" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer4">
+						<Offset>
+						<AbsDimension x="0" y="20" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer>
+						<FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Player 3">
+						<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<FontHeight>
+						<AbsValue val="12" />
+						</FontHeight>
+						<Color r="1" g="0.8196079" b="0" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						</Layer>
+						</Layers>
+						</Frame>
+						<Frame name="$parentLabelPlayer5">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="179" y="28" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer5">
+						<Offset>
+						<AbsDimension x="0" y="20" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer>
+						<FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Player 4">
+						<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<FontHeight>
+						<AbsValue val="12" />
+						</FontHeight>
+						<Color r="1" g="0.8196079" b="0" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						</Layer>
+						</Layers>
+						</Frame>
+						<Frame name="$parentLabelPlayer6">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="179" y="28" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer6">
+						<Offset>
+						<AbsDimension x="0" y="20" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer>
+						<FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Player 5">
+						<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<FontHeight>
+						<AbsValue val="12" />
+						</FontHeight>
+						<Color r="1" g="0.8196079" b="0" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						</Layer>
+						</Layers>
+						</Frame>
+						<Frame name="$parentLabelPlayer7">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="179" y="28" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer7">
+						<Offset>
+						<AbsDimension x="0" y="20" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer>
+						<FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Player 6">
+						<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<FontHeight>
+						<AbsValue val="12" />
+						</FontHeight>
+						<Color r="1" g="0.8196079" b="0" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						</Layer>
+						</Layers>
+						</Frame>
+						<Frame name="$parentLabelPlayer8">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="179" y="28" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer8">
+						<Offset>
+						<AbsDimension x="0" y="20" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer>
+						<FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Player 7">
+						<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<FontHeight>
+						<AbsValue val="12" />
+						</FontHeight>
+						<Color r="1" g="0.8196079" b="0" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						</Layer>
+						</Layers>
+						</Frame>
+						<Frame name="$parentLabelPlayer9">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="179" y="28" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer9">
+						<Offset>
+						<AbsDimension x="0" y="20" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer>
+						<FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Player 8">
+						<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<FontHeight>
+						<AbsValue val="12" />
+						</FontHeight>
+						<Color r="1" g="0.8196079" b="0" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						</Layer>
+						</Layers>
+						</Frame>
+						<Frame name="$parentLabelPlayer10">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="179" y="28" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer10">
+						<Offset>
+						<AbsDimension x="0" y="20" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer>
+						<FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Player 9">
+						<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<FontHeight>
+						<AbsValue val="12" />
+						</FontHeight>
+						<Color r="1" g="0.8196079" b="0" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						</Layer>
+						</Layers>
+						</Frame>
+						<Frame name="$parentLabelPlayer11">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="179" y="28" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer11">
+						<Offset>
+						<AbsDimension x="0" y="20" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer>
+						<FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Player 10">
+						<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<FontHeight>
+						<AbsValue val="12" />
+						</FontHeight>
+						<Color r="1" g="0.8196079" b="0" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						</Layer>
+						</Layers>
+						</Frame>
+						<Frame name="$parentLabelPlayer12">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="179" y="28" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer12">
+						<Offset>
+						<AbsDimension x="0" y="20" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer>
+						<FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Player 11">
+						<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<FontHeight>
+						<AbsValue val="12" />
+						</FontHeight>
+						<Color r="1" g="0.8196079" b="0" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						</Layer>
+						</Layers>
+						</Frame>
+						<Frame name="$parentLabelPlayer13">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="179" y="28" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer13">
+						<Offset>
+						<AbsDimension x="0" y="20" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer>
+						<FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Player 12">
+						<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<FontHeight>
+						<AbsValue val="12" />
+						</FontHeight>
+						<Color r="1" g="0.8196079" b="0" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						</Layer>
+						</Layers>
+						</Frame>
+						<Frame name="$parentLabelPlayer14">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="179" y="28" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer14">
+						<Offset>
+						<AbsDimension x="0" y="20" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer>
+						<FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Player 13">
+						<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<FontHeight>
+						<AbsValue val="12" />
+						</FontHeight>
+						<Color r="1" g="0.8196079" b="0" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						</Layer>
+						</Layers>
+						</Frame>
+						<Frame name="$parentLabelPlayer15">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="179" y="28" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentEditBoxPlayer15">
+						<Offset>
+						<AbsDimension x="0" y="20" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer>
+						<FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Player 14">
+						<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<FontHeight>
+						<AbsValue val="12" />
+						</FontHeight>
+						<Color r="1" g="0.8196079" b="0" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						</Layer>
+						</Layers>
+						</Frame>
+						<!--END TAB 1-->
+						
+						</Frames> 
+						</Frame>   
+						<Frame name="SyncSettings" hidden="true">
+						<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Layers>
+						</Layers>
+						<Frames>
+						<!--START TAB 2-->
+						<Frame name="$parentLabelTempSync">
+						<!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+						<Size>
+						<AbsDimension x="179" y="28" />
+						</Size>
+						<Anchors>
+						<Anchor point="CENTER" relativeTo="">
+						<Offset>
+						<AbsDimension x="0" y="20" />
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Layers>
+						<Layer>
+						<FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Tu veux voir ma **** ?">
+						<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+						</Anchors>
+						<FontHeight>
+						<AbsValue val="12" />
+						</FontHeight>
+						<Color r="1" g="0.8196079" b="0" />
+						<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+						<AbsDimension x="1" y="-1" />
+						</Offset>
+						</Shadow>
+						</FontString>
+						</Layer>
+						</Layers>
+						</Frame>
+						<!--END TAB 2-->
+						</Frames> 
+						</Frame>
+						<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="General">
+						<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="">
+						<Offset>
+						<AbsDimension x="20" y="-28"/>
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Scripts>
+						<OnClick>
+						XtraUnitFrameUITab1:SetPoint("BOTTOMLEFT", 20,-28);
+						XtraUnitFrameUITab2:SetPoint("BOTTOMLEFT", 85,-23);
+						PanelTemplates_SetTab(XtraUnitFrameUI, 1);
+						XUFMainSettings:Show();
+						SyncSettings:Hide();
+						</OnClick>
+						</Scripts>
+						</Button>
+						<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="Coucou">
+						<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="" relativePoint="">
+						<Offset>
+						<AbsDimension x="85" y="-23"/>
+						</Offset>
+						</Anchor>
+						</Anchors>
+						<Scripts>
+						<OnClick>
+						XtraUnitFrameUITab2:SetPoint("BOTTOMLEFT", 85,-28);
+						XtraUnitFrameUITab1:SetPoint("BOTTOMLEFT", 20,-23);
+						PanelTemplates_SetTab(XtraUnitFrameUI, 2);
+						XUFMainSettings:Hide();
+						SyncSettings:Show();
+						</OnClick>
+						</Scripts>
+						</Button>
+						</Frames>
+						<Scripts>
+						<OnLoad>
+						XtraUnitFrameUITitleString:SetText("XtraUnitFrame v" .. GetAddOnMetadata("XtraUnitFrame", "Version"));
+						<!--MakeGroupUI();
+						UnlockFrame(XtraUnitFrameUI)-->
+						this.elapsed = 0;
+						PanelTemplates_SetNumTabs(XtraUnitFrameUI, 2);
+						PanelTemplates_SetTab(XtraUnitFrameUI, 1);
+						</OnLoad>
+						<OnShow>
+						PlaySound("UChatScrollButton");
+						PanelTemplates_SetTab(XtraUnitFrameUI, 1);
+						XUFMainSettings:Show()
+						MsgSettings:Hide()
+						</OnShow>
+						<OnHide>
+						PlaySound("UChatScrollButton");
+						</OnHide>
+						<OnShow>
+						Xuf:SwitchEditBoxTabb()
+						Xuf:LoadSettingsInUI()
+						XUFMainSettingsSliderGrpSettings:SetValue(1)
+						</OnShow>
+						</Scripts>
+						</Frame>
+						</Ui>																			
