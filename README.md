@@ -45,6 +45,8 @@ Mark or not the compartment AutoReload if you wish that the interface Reload aft
 
 2. Profile Already existing, you press simply on Save.
 
+Maximum profil is limited for prevent crash of DropDownList.
+
 If you wish to Load an existing Profile, Select in the list below has right and Load or via the minimap button in the list.
 
 If you wish to Delete an existing Profile, Select it and Delete (he do not have to be Active.)
