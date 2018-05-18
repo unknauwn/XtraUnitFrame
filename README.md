@@ -53,6 +53,8 @@ The button at the very top has left will serve you Synchronized your profile wit
 
 Furthermore, If you are Leader of the Raid or Promote, you can load and share quickly a profile existing directly via the button of the minimap.
 
+You can switch Mana to Health or Health to Mana with rolling mouse on name/
+
 Here is you can close the addon by clicking the little **[x]**, the configuration is ended.
 
 To Show or Hide the addon use the following commands: **/xuf show** et **/xuf hide**
